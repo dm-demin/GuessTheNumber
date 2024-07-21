@@ -1,0 +1,5 @@
+{
+    "RandomMinValue": 10,
+    "RandomMaxValue": 20,
+    "MaxAttempt": 5
+}

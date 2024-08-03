@@ -17,8 +17,10 @@ internal class Program
         var hostBuilder = Host.CreateApplicationBuilder();
         hostBuilder.Services.AddSingleton<IScorable, Score>()
                             .AddSingleton<IGuessable, ThinkRandom>()
-                            .AddSingleton<IGuessService, GuessService>();
+                            .AddSingleton<IGuessService, GuessService>()
+                            .AddSingleton<IUserCommunicate, ConsoleUserCommunicator>();
         hostBuilder.Configuration.AddJsonFile("settings.json", optional: true, reloadOnChange: true);
+
         var serviceProvider = hostBuilder.Services.BuildServiceProvider();
 
         IGuessService guessService = serviceProvider.GetRequiredService<IGuessService>();

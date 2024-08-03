@@ -11,44 +11,45 @@ public class GuessService : IGuessService
     private readonly IScorable _score;
     private readonly IGuessable _hiddenNumber;
 
+    private readonly IUserCommunicate _userInterface;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GuessService"/> class.
     /// </summary>
     /// <param name="score">Scope calculation class.</param>
     /// <param name="hiddenNumber">Hidden number class.</param>
-    public GuessService(IScorable score, IGuessable hiddenNumber)
+    public GuessService(IScorable score, IGuessable hiddenNumber, IUserCommunicate userInterface)
     {
         _score = score;
         _hiddenNumber = hiddenNumber;
+        _userInterface = userInterface;
     }
 
     /// <inheritdoc/>
     public void TryGuess()
     {
-        Console.WriteLine("Try to guess number between {0} and {1}", _hiddenNumber.GetMinValue(), _hiddenNumber.GetMaxValue());
-        Console.WriteLine("You have {0} attempts", _score.MaxAttempts);
+        _userInterface.Notify(string.Format("Try to guess number between {0} and {1}", _hiddenNumber.GetMinValue(), _hiddenNumber.GetMaxValue()));
+        _userInterface.Notify(string.Format("You have {0} attempts", _score.MaxAttempts));
         try
         {
             while (true)
             {
                 _score.NewAttempt();
 
-                Console.Write("Your answer: ");
-                int answer = Convert.ToInt32(Console.ReadLine());
-
+                int answer = _userInterface.WaitAnswer();
                 var isRight = _hiddenNumber.CheckAnswer(answer, out var advise);
-                Console.WriteLine(advise);
+                _userInterface.Notify(advise);
                 if (isRight)
                 {
                     break;
                 }
             }
 
-            Console.WriteLine(_score.GetScore());
+            _userInterface.Notify(string.Format(_score.GetScore()));
         }
         catch (MaxAttemptReached)
         {
-            Console.WriteLine("Max attempt reached, try again later...");
+            _userInterface.Notify(string.Format("Max attempt reached, try again later..."));
         }
 
         return;
